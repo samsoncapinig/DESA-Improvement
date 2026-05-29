@@ -164,16 +164,16 @@ if uploaded_files:
 
     for label, responses in qualitative_results.items():
         if responses:
-        st.markdown(f"### {label}")
-        st.dataframe(pd.DataFrame({label: responses}), use_container_width=True)
+            st.markdown(f"### {label}")
+            st.dataframe(pd.DataFrame({label: responses}), use_container_width=True)
 
-        # ✅ ADD THIS BUTTON
-        if st.button(f"Generate Themes for {label}"):
-            with st.spinner("Analyzing..."):
-                themes = get_themes(label, responses)
+            # ✅ ADD THIS BUTTON
+            if st.button(f"Generate Themes for {label}"):
+                with st.spinner("Analyzing..."):
+                    themes = get_themes(label, responses)
 
-            st.markdown("#### 🤖 Thematic Analysis")
-            st.write(themes)
+                st.markdown("#### 🤖 Thematic Analysis")
+                st.write(themes)
 
 
     # =============================

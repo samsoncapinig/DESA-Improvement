@@ -64,10 +64,9 @@ def detect_strict_qualitative_columns(df):
 
 
 from openai import OpenAI
-import os
 
 client = OpenAI(
-    api_key=os.environ["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"]
+    api_key="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"]
 )
 
 def get_themes(label, responses):

@@ -63,6 +63,7 @@ def detect_strict_qualitative_columns(df):
     return found
 
 
+import os
 from openai import OpenAI
 
 client = OpenAI(

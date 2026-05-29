@@ -62,9 +62,12 @@ def detect_strict_qualitative_columns(df):
                 found[label].append(col)
     return found
 
-import openai
+from openai import OpenAI
+import os
 
-openai.api_key = "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"
+client = OpenAI(
+    api_key=os.environ["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"]  # or put your key directly (not recommended)
+)
 
 def get_themes(label, responses):
     if not responses:
@@ -75,24 +78,24 @@ def get_themes(label, responses):
     prompt = f"""
     You are an expert in DepEd training evaluation.
 
-    Group the responses into 3-5 themes.
-    Explain each theme and give a short interpretation.
+    Identify 3-5 themes, explain each, and give interpretation.
 
     Responses:
     {text}
     """
 
     try:
-        res = openai.ChatCompletion.create(
-            model="gpt-4o-mini",   # ✅ best cheap model
+        res = client.chat.completions.create(
+            model="gpt-4o-mini",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.3
         )
 
-        return res["choices"][0]["message"]["content"]
+        return res.choices[0].message.content
 
     except Exception as e:
-        return f"Error: {str(e)}"
+        return f"❌ Error: {str(e)}"
+
 
 # =============================
 # FILE UPLOADER

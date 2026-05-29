@@ -75,28 +75,28 @@ def get_themes(label, responses):
     if not responses:
         return "No responses."
 
-    # ✅ Keep it small & fast
-    text = "\n".join(responses[:30])
+    text = "\n".join(responses[:20])  # keep small for stability
 
     prompt = f"""
-    Group these training evaluation responses into themes.
+    You are an expert in DepEd training evaluation.
 
-    Provide:
-    1. 3-5 themes
-    2. Short explanation per theme
-    3. One overall interpretation
+    Identify themes, explain each, and give interpretation.
 
     Responses:
     {text}
     """
 
-    result = client.chat.completions.create(
-        model="desa-gpt",
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0.3
-    )
+    try:
+        res = openai.ChatCompletion.create(
+            engine="desa-gpt",   # ✅ deployment name
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.3
+        )
 
-    return result.choices[0].message.content
+        return res["choices"][0]["message"]["content"]
+
+    except Exception as e:
+        return f"❌ Connection Error: {str(e)}"
 
 # =============================
 # FILE UPLOADER

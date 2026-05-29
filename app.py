@@ -62,6 +62,42 @@ def detect_strict_qualitative_columns(df):
                 found[label].append(col)
     return found
 
+from openai import AzureOpenAI
+
+# ✅ Initialize Copilot (Azure OpenAI)
+client = AzureOpenAI(
+    api_key="YOUR_API_KEY",
+    api_version="2024-02-15-preview",
+    azure_endpoint="YOUR_ENDPOINT"
+)
+
+def get_themes(label, responses):
+    if not responses:
+        return "No responses."
+
+    # ✅ Keep it small & fast
+    text = "\n".join(responses[:30])
+
+    prompt = f"""
+    Group these training evaluation responses into themes.
+
+    Provide:
+    1. 3-5 themes
+    2. Short explanation per theme
+    3. One overall interpretation
+
+    Responses:
+    {text}
+    """
+
+    result = client.chat.completions.create(
+        model="desa-gpt",
+        messages=[{"role": "user", "content": prompt}],
+        temperature=0.3
+    )
+
+    return result.choices[0].message.content
+
 # =============================
 # FILE UPLOADER
 # =============================
@@ -127,9 +163,18 @@ if uploaded_files:
     st.subheader("📝 Qualitative Responses")
 
     for label, responses in qualitative_results.items():
-        if responses:
-            st.markdown(f"### {label}")
-            st.dataframe(pd.DataFrame({label: responses}), use_container_width=True)
+    if responses:
+        st.markdown(f"### {label}")
+        st.dataframe(pd.DataFrame({label: responses}), use_container_width=True)
+
+        # ✅ ADD THIS BUTTON
+        if st.button(f"Generate Themes for {label}"):
+            with st.spinner("Analyzing..."):
+                themes = get_themes(label, responses)
+
+            st.markdown("#### 🤖 Thematic Analysis")
+            st.write(themes)
+
 
     # =============================
     # PDF REPORT

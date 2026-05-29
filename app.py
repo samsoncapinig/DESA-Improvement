@@ -67,6 +67,12 @@ def detect_strict_qualitative_columns(df):
     return found
 
 # ✅ AI FUNCTION (FIXED)
+from openai import OpenAI
+import os
+
+client = OpenAI(
+    api_key=os.environ["OPENAI_API_KEY"]
+)
 def get_themes(label, responses):
     text = "\n".join(responses[:30])
 

@@ -62,25 +62,24 @@ def detect_strict_qualitative_columns(df):
                 found[label].append(col)
     return found
 
-from openai import AzureOpenAI
+import os
+from dotenv import load_dotenv
 
-# ✅ Initialize Copilot (Azure OpenAI)
-client = AzureOpenAI(
-    api_key="YOUR_API_KEY",
-    api_version="2024-02-15-preview",
-    azure_endpoint="YOUR_ENDPOINT"
+load_dotenv()
+openai.api_key = "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"
 )
 
 def get_themes(label, responses):
     if not responses:
         return "No responses."
 
-    text = "\n".join(responses[:20])  # keep small for stability
+    text = "\n".join(responses[:30])
 
     prompt = f"""
     You are an expert in DepEd training evaluation.
 
-    Identify themes, explain each, and give interpretation.
+    Group the responses into 3-5 themes.
+    Explain each theme and give a short interpretation.
 
     Responses:
     {text}
@@ -88,7 +87,7 @@ def get_themes(label, responses):
 
     try:
         res = openai.ChatCompletion.create(
-            engine="desa-gpt",   # ✅ deployment name
+            model="gpt-4o-mini",   # ✅ best cheap model
             messages=[{"role": "user", "content": prompt}],
             temperature=0.3
         )
@@ -96,7 +95,7 @@ def get_themes(label, responses):
         return res["choices"][0]["message"]["content"]
 
     except Exception as e:
-        return f"❌ Connection Error: {str(e)}"
+        return f"Error: {str(e)}"
 
 # =============================
 # FILE UPLOADER

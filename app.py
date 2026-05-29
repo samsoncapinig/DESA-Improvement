@@ -62,7 +62,8 @@ def detect_strict_qualitative_columns(df):
                 found[label].append(col)
     return found
 
-import os
+import openai
+
 openai.api_key = "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"
 
 def get_themes(label, responses):

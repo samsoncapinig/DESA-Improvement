@@ -163,7 +163,7 @@ if uploaded_files:
     st.subheader("📝 Qualitative Responses")
 
     for label, responses in qualitative_results.items():
-    if responses:
+        if responses:
         st.markdown(f"### {label}")
         st.dataframe(pd.DataFrame({label: responses}), use_container_width=True)
 

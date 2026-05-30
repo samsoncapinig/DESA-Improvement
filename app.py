@@ -223,36 +223,48 @@ st.subheader("📄 Generate Reports")
 col1, col2 = st.columns(2)
 
 with col1:
-    if st.button("Download Form 4 (Detailed Report)"):
-        file_path = generate_form4_pdf(
-            combined_df,
-            qualitative_results,
-            combined_df['Average Rating'].mean()
-        )
+    if uploaded_files and category_results:
 
-        with open(file_path, "rb") as f:
-            st.download_button(
-                "Click to Download Form 4",
-                f,
-                "Form4_Report.pdf",
-                "application/pdf"
+    combined_df = pd.DataFrame(category_results)
+    combined_df["Average Rating"] = combined_df.mean(axis=1)
+
+    st.dataframe(combined_df)
+
+    overall_rating = combined_df['Average Rating'].mean()
+
+    # =============================
+    # PDF BUTTONS ✅ INSIDE BLOCK
+    # =============================
+    st.subheader("📄 Generate Reports")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        if st.button("Download Form 4 (Detailed Report)"):
+            file_path = generate_form4_pdf(
+                combined_df,
+                qualitative_results,
+                overall_rating
             )
+            with open(file_path, "rb") as f:
+                st.download_button(
+                    "Click to Download Form 4",
+                    f,
+                    "Form4_Report.pdf"
+                )
 
-with col2:
-    if st.button("Download Form 5 (Summary Report)"):
-        file_path = generate_form5_pdf(
-            combined_df,
-            combined_df['Average Rating'].mean()
-        )
-
-        with open(file_path, "rb") as f:
-            st.download_button(
-                "Click to Download Form 5",
-                f,
-                "Form5_Report.pdf",
-                "application/pdf"
+    with col2:
+        if st.button("Download Form 5 (Summary Report)"):
+            file_path = generate_form5_pdf(
+                combined_df,
+                overall_rating
             )
-
+            with open(file_path, "rb") as f:
+                st.download_button(
+                    "Click to Download Form 5",
+                    f,
+                    "Form5_Report.pdf"
+                )
 # =============================
 # FILE UPLOADER
 # =============================

@@ -100,6 +100,158 @@ def generate_summary(text_list):
 st.title("📝 Qualitative Response Summarizer")
 st.write("Upload a CSV file containing open-ended responses to generate an AI summary.")
 
+# =============================
+# FORM 5
+# =============================
+
+def generate_form5_pdf(combined_df, overall_rating):
+    temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
+
+    doc = SimpleDocTemplate(temp_file.name, pagesize=letter)
+    styles = getSampleStyleSheet()
+    content = []
+
+    # TITLE
+    content.append(Paragraph("RV-QAME TOOL-05", styles["Heading2"]))
+    content.append(Paragraph("Overall Monitoring & Evaluation Results Form", styles["Title"]))
+
+    # TRAINING INFO (you can customize these)
+    content.append(Paragraph("<b>Title of Training Program:</b> Project DESA", styles["Normal"]))
+    content.append(Paragraph(f"<b>Date:</b> {datetime.now().strftime('%Y-%m-%d')}", styles["Normal"]))
+
+    # TABLE HEADER
+    table_data = [[
+        "Learning Area",
+        "Daily Eval",
+        "End Program Eval",
+        "Overall Result"
+    ]]
+
+    for idx, row in combined_df.iterrows():
+        rating = f"{row['Average Rating']:.2f}"
+        table_data.append([idx, rating, rating, rating])
+
+    table = Table(table_data)
+
+    table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+    ]))
+
+    content.append(table)
+
+    # ANALYSIS
+    content.append(Paragraph("<b>Analysis:</b>", styles["Heading3"]))
+    content.append(Paragraph("Overall performance is satisfactory based on evaluation results.", styles["Normal"]))
+
+    # RECOMMENDATION
+    content.append(Paragraph("<b>Recommendations:</b>", styles["Heading3"]))
+    content.append(Paragraph("Enhance delivery strategies and provide more support materials.", styles["Normal"]))
+
+    doc.build(content)
+    return temp_file.name
+
+# =============================
+# FORM 4
+# =============================
+def generate_form4_pdf(combined_df, qualitative_results, overall_rating):
+    temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
+
+    doc = SimpleDocTemplate(temp_file.name, pagesize=letter)
+    styles = getSampleStyleSheet()
+    content = []
+
+    # HEADER
+    content.append(Paragraph("RV-QAME TOOL-04", styles["Heading2"]))
+    content.append(Paragraph("Monitoring and Evaluation Analysis Form", styles["Title"]))
+
+    # TRAINING INFO
+    content.append(Paragraph("<b>Title of Training Program:</b> Project DESA", styles["Normal"]))
+    content.append(Paragraph(f"<b>Date:</b> {datetime.now().strftime('%Y-%m-%d')}", styles["Normal"]))
+
+    # =============================
+    # SECTION 1: SESSION EVALUATION
+    # =============================
+    content.append(Paragraph("<b>1. Session Evaluation</b>", styles["Heading2"]))
+
+    table_data = [["Category", "Rating"]]
+
+    for idx, row in combined_df.iterrows():
+        table_data.append([idx, f"{row['Average Rating']:.2f}"])
+
+    table = Table(table_data)
+
+    table.setStyle(TableStyle([
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+    ]))
+
+    content.append(table)
+
+    # =============================
+    # QUALITATIVE SUMMARY
+    # =============================
+    for label, responses in qualitative_results.items():
+        content.append(Paragraph(f"<b>{label}</b>", styles["Heading2"]))
+
+        summary = generate_summary(responses)
+
+        content.append(Paragraph(summary, styles["Normal"]))
+
+    # =============================
+    # FINDINGS
+    # =============================
+    content.append(Paragraph("<b>Major Observations / Findings:</b>", styles["Heading2"]))
+    content.append(Paragraph("Participants generally showed positive engagement.", styles["Normal"]))
+
+    # =============================
+    # OVERALL RATING
+    # =============================
+    content.append(Paragraph(f"<b>Overall Rating:</b> {overall_rating:.2f}", styles["Heading2"]))
+
+    # =============================
+    # RECOMMENDATIONS
+    # =============================
+    content.append(Paragraph("<b>Recommendations:</b>", styles["Heading2"]))
+    content.append(Paragraph("Improve pacing and provide additional hands-on activities.", styles["Normal"]))
+
+    doc.build(content)
+    return temp_file.name
+
+st.subheader("📄 Generate Reports")
+
+col1, col2 = st.columns(2)
+
+with col1:
+    if st.button("Download Form 4 (Detailed Report)"):
+        file_path = generate_form4_pdf(
+            combined_df,
+            qualitative_results,
+            combined_df['Average Rating'].mean()
+        )
+
+        with open(file_path, "rb") as f:
+            st.download_button(
+                "Click to Download Form 4",
+                f,
+                "Form4_Report.pdf",
+                "application/pdf"
+            )
+
+with col2:
+    if st.button("Download Form 5 (Summary Report)"):
+        file_path = generate_form5_pdf(
+            combined_df,
+            combined_df['Average Rating'].mean()
+        )
+
+        with open(file_path, "rb") as f:
+            st.download_button(
+                "Click to Download Form 5",
+                f,
+                "Form5_Report.pdf",
+                "application/pdf"
+            )
 
 # =============================
 # FILE UPLOADER

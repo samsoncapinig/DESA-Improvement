@@ -15,11 +15,6 @@ from reportlab.lib.pagesizes import letter
 import tempfile
 from openai import OpenAI
 
-# ✅ SECURE API KEY (USE STREAMLIT SECRETS)
-client = OpenAI(
-    api_key=os.environ["OPENAI_API_KEY"]   # set this in Streamlit Secrets
-)
-
 # =============================
 # PAGE CONFIG
 # =============================
@@ -65,37 +60,6 @@ def detect_strict_qualitative_columns(df):
             if re.match(pattern, col.strip(), flags=re.IGNORECASE):
                 found[label].append(col)
     return found
-
-# ✅ AI FUNCTION (FIXED)
-from openai import OpenAI
-import os
-
-client = OpenAI(
-    api_key=os.environ["OPENAI_API_KEY"]
-)
-def get_themes(label, responses):
-    text = "\n".join(responses[:30])
-
-    prompt = f"""
-    You are an expert in DepEd training evaluation.
-
-    Identify 3-5 themes, explain each, and give a short interpretation.
-
-    Responses:
-    {text}
-    """
-
-    try:
-        res = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.3
-        )
-
-        return res.choices[0].message.content
-
-    except Exception as e:
-        return f"❌ AI Error: {e}"
 
 # =============================
 # FILE UPLOADER

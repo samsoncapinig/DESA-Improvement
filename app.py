@@ -12,7 +12,6 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
 import tempfile
 import google.generativeai as genai
 
@@ -96,32 +95,6 @@ def generate_summary(text_list):
     except Exception as e:
         return f"An error occurred: {e}"
 
-# --- your existing functions (e.g. scoring, analysis, etc.) ---
-
-def generate_pdf(data, filename="Form5_Report.pdf"):
-    c = canvas.Canvas(filename, pagesize=letter)
-
-    c.setFont("Helvetica", 12)
-
-    c.drawString(50, 750, "OVERALL MONITORING & EVALUATION RESULTS")
-    c.drawString(50, 720, f"Title: {data['title']}")
-    c.drawString(50, 700, f"Date: {data['date']} | Venue: {data['venue']}")
-
-    c.drawString(50, 670, "Participants:")
-    c.drawString(70, 650, f"Teaching: {data['participants']['teaching']}")
-    c.drawString(70, 630, f"Non-Teaching: {data['participants']['non_teaching']}")
-    c.drawString(70, 610, f"Teaching Related: {data['participants']['teaching_related']}")
-
-    c.drawString(50, 580, f"Overall Result: {data['overall_result']}")
-
-    c.drawString(50, 550, "Analysis:")
-    c.drawString(70, 530, data['analysis'])
-
-    c.drawString(50, 500, "Recommendations:")
-    c.drawString(70, 480, data['recommendations'])
-
-    c.save()
-    return filename
 
 # --- Streamlit UI ---
 st.title("📝 Qualitative Response Summarizer")
@@ -193,41 +166,7 @@ if uploaded_files:
 
                 st.markdown("#### 🤖 Thematic Analysis")
                 st.write(result)
-
-    # =============================
-    # PDF BUTTON
-    # =============================
-
-# Example: after computing your evaluation results
-
-if st.button("Generate PDF Report"):
-
-    form_data = {
-        "title": training_title,   # from your input fields
-        "date": training_date,
-        "venue": venue,
-        "participants": {
-            "teaching": teaching_count,
-            "non_teaching": non_teaching_count,
-            "teaching_related": teaching_related_count
-        },
-        "overall_result": overall_rating,
-        "analysis": analysis_text,
-        "recommendations": recommendations_text
-    }
-
-    file_path = generate_pdf(form_data)
-
-    with open(file_path, "rb") as file:
-        st.download_button(
-            label="Download PDF",
-            data=file,
-            file_name="Form5_Report.pdf",
-            mime="application/pdf"
-        )
-    # =============================
-    # FOOTER
-    # =============================
+    
 
 
 from datetime import datetime

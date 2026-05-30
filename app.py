@@ -166,19 +166,25 @@ if uploaded_files:
 
                 st.markdown("#### 🤖 Thematic Analysis")
                 st.write(result)
+    
 
-# =============================
-# FOOTER
-# =============================
+
+from datetime import datetime
+
 st.divider()
 
-col1, col2 = st.columns([1, 6])
+col_pic, col_text = st.columns([1, 6])
 
-with col1:
+with col_pic:
     st.image("samson.png", width=80)
 
-with col2:
-    st.markdown(f"""
-    **Developed by Sir Sam**  
-    © {datetime.now().year}
-    """)
+with col_text:
+    st.markdown(
+        f"""
+        **Developed by Sir Sam**   
+        Project DESA • SDO Masbate City  
+        © {datetime.now().year} . All rights reserved.
+        """
+    )
+
+

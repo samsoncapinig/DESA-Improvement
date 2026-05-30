@@ -161,7 +161,7 @@ if uploaded_files:
 
             if st.button(f"Analyze {label}", key=label):
                 with st.spinner("Analyzing..."):
-                    result = get_themes(label, responses)
+                    result = generate_summary(responses)
 
                 st.markdown("#### 🤖 Thematic Analysis")
                 st.write(result)

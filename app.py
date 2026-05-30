@@ -97,9 +97,6 @@ def generate_summary(text_list):
 
 
 # --- Streamlit UI ---
-st.title("📝 Qualitative Response Summarizer")
-st.write("Upload a CSV file containing open-ended responses to generate an AI summary.")
-
 
 # =============================
 # FILE UPLOADER

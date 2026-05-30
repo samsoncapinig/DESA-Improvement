@@ -17,7 +17,7 @@ import google.generativeai as genai
 
 # ✅ Gemini setup
 genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
-model = genai.GenerativeModel("gemini-1.5-flash")
+model = genai.GenerativeModel("gemini-1.0-pro")
 
 
 # =============================
@@ -70,7 +70,7 @@ def detect_strict_qualitative_columns(df):
 import google.generativeai as genai
 
 genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
-model = genai.GenerativeModel("gemini-1.5-flash")
+model = genai.GenerativeModel("gemini-1.0-pro")
 
 def generate_summary(text_list):
     combined_text = "\n---\n".join(text_list[:50])  # limit for safety

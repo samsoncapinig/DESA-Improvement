@@ -61,6 +61,71 @@ def detect_strict_qualitative_columns(df):
                 found[label].append(col)
     return found
 
+
+# Initialize the OpenAI client
+# Ensure OPENAI_API_KEY is set in your environment variables or Streamlit secrets
+client = OpenAI()
+
+def generate_summary(text_list):
+    """
+    Sends a list of text responses to OpenAI and returns a summary.
+    """
+    # Combine the responses into a single string with clear delimiters
+    combined_text = "\n---\n".join(text_list)
+    
+    prompt = (
+        "You are an expert qualitative data analyst. Analyze the following customer/user "
+        "survey responses. Provide a concise summary that includes:\n"
+        "1. Main themes and common sentiments\n"
+        "2. Key pain points or criticisms\n"
+        "3. Notable positive feedback\n\n"
+        f"Responses:\n{combined_text}"
+    )
+
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4o-mini", # Efficient and accurate for text analysis
+            messages=[
+                {"role": "system", "content": "You are a helpful data analysis assistant."},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.5
+        )
+        return response.choices[0].message.content
+    except Exception as e:
+        return f"An error occurred: {e}"
+
+# --- Streamlit UI ---
+st.title("📝 Qualitative Response Summarizer")
+st.write("Upload a CSV file containing open-ended responses to generate an AI summary.")
+
+# File uploader
+uploaded_file = st.file_uploader("Choose a CSV file", type=["csv"])
+
+if uploaded_file is not None:
+    # Read CSV
+    df = pd.read_csv(uploaded_file)
+    st.write("### Data Preview", df.head())
+    
+    # Column selector
+    text_column = st.selectbox("Select the column containing text responses:", df.columns)
+    
+    # Clean data: drop empty values and convert to string list
+    responses = df[text_column].dropna().astype(str).tolist()
+    
+    if st.button("Generate Summary"):
+        if not responses:
+            st.warning("The selected column has no text data to summarize.")
+        else:
+            with st.spinner("Analyzing responses..."):
+                summary_result = generate_summary(responses)
+                
+            st.success("Analysis Complete!")
+            st.write("### AI Summary")
+            st.markdown(summary_result)
+
+
+
 # =============================
 # FILE UPLOADER
 # =============================

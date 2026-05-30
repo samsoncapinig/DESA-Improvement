@@ -4,4 +4,4 @@ pandas
 numpy
 openpyxl
 reportlab
-openai
+openai==1.30.0

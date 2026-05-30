@@ -27,7 +27,7 @@ st.markdown("Designed for faster data analysis and interpretation of evaluation 
 # =============================
 # CONSTANTS
 # =============================
-EXCLUDED_CATEGORIES = ["department", "group", "institution"]
+EXCLUDED_CATEGORIES = ["response", "department", "submitted on:", "Course", "group", "ID", "Full name", "Username", "institution",]
 
 QUAL_HEADER_PATTERNS = {
     "Insights": r"^Q\d+[_\- ]*Insights$",
@@ -111,7 +111,7 @@ if uploaded_files:
     st.markdown(f"### ✅ Overall Rating: {combined_df['Average Rating'].mean():.2f}")
 
     # =============================
-    # QUALITATIVE + AI
+    # QUALITATIVE RESPONSES
     # =============================
     st.subheader("📝 Qualitative Responses + AI Analysis")
 
@@ -139,6 +139,6 @@ with col1:
 
 with col2:
     st.markdown(f"""
-    **Developed by Samson G. Capinig**  
+    **Developed by Sir Sam**  
     © {datetime.now().year}
     """)

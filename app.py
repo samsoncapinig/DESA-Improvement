@@ -223,48 +223,71 @@ st.subheader("📄 Generate Reports")
 col1, col2 = st.columns(2)
 
 with col1:
-    if uploaded_files and category_results:
+   if uploaded_files:
+    category_results = {}
+    qualitative_results = defaultdict(list)
 
-    combined_df = pd.DataFrame(category_results)
-    combined_df["Average Rating"] = combined_df.mean(axis=1)
+    for f in uploaded_files:
+        df = load_any_file(f)
 
-    st.dataframe(combined_df)
+        rating_cols = detect_rating_columns(df)
 
-    overall_rating = combined_df['Average Rating'].mean()
+        if rating_cols:
+            cat_df = pd.DataFrame({
+                "Category": [extract_category(c) for c in rating_cols],
+                "Rating": [df[c].mean() for c in rating_cols]
+            })
 
-    # =============================
-    # PDF BUTTONS ✅ INSIDE BLOCK
-    # =============================
-    st.subheader("📄 Generate Reports")
+            cat_df = cat_df[~cat_df["Category"].str.lower().isin(EXCLUDED_CATEGORIES)]
+            cat_avg = cat_df.groupby("Category", as_index=False).mean()
 
-    col1, col2 = st.columns(2)
+            category_results[f.name] = cat_avg.set_index("Category")["Rating"]
 
-    with col1:
-        if st.button("Download Form 4 (Detailed Report)"):
-            file_path = generate_form4_pdf(
-                combined_df,
-                qualitative_results,
-                overall_rating
-            )
-            with open(file_path, "rb") as f:
-                st.download_button(
-                    "Click to Download Form 4",
-                    f,
-                    "Form4_Report.pdf"
+        qual_map = detect_strict_qualitative_columns(df)
+        for label, cols in qual_map.items():
+            for col in cols:
+                qualitative_results[label].extend(df[col].dropna().astype(str).tolist())
+
+    # ✅ NOW safe to create combined_df
+    if category_results:
+        combined_df = pd.DataFrame(category_results)
+        combined_df["Average Rating"] = combined_df.mean(axis=1)
+
+        st.dataframe(combined_df)
+
+        overall_rating = combined_df["Average Rating"].mean()
+
+        # ✅ PDF SECTION
+        st.subheader("📄 Generate Reports")
+
+        col1, col2 = st.columns(2)
+
+        with col1:
+            if st.button("Download Form 4 (Detailed Report)"):
+                file_path = generate_form4_pdf(
+                    combined_df,
+                    qualitative_results,
+                    overall_rating
                 )
+                with open(file_path, "rb") as f:
+                    st.download_button(
+                        "Click to Download Form 4",
+                        f,
+                        "Form4_Report.pdf"
+                    )
 
-    with col2:
-        if st.button("Download Form 5 (Summary Report)"):
-            file_path = generate_form5_pdf(
-                combined_df,
-                overall_rating
-            )
-            with open(file_path, "rb") as f:
-                st.download_button(
-                    "Click to Download Form 5",
-                    f,
-                    "Form5_Report.pdf"
+        with col2:
+            if st.button("Download Form 5 (Summary Report)"):
+                file_path = generate_form5_pdf(
+                    combined_df,
+                    overall_rating
                 )
+                with open(file_path, "rb") as f:
+                    st.download_button(
+                        "Click to Download Form 5",
+                        f,
+                        "Form5_Report.pdf"
+                    )
 # =============================
 # FILE UPLOADER
 # =============================

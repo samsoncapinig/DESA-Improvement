@@ -113,7 +113,7 @@ if uploaded_files:
     # =============================
     # QUALITATIVE RESPONSES
     # =============================
-    st.subheader("📝 Qualitative Responses + AI Analysis")
+    st.subheader("📝 Qualitative Responses")
 
     for label, responses in qualitative_results.items():
         if responses:

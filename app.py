@@ -99,32 +99,6 @@ def generate_summary(text_list):
 st.title("📝 Qualitative Response Summarizer")
 st.write("Upload a CSV file containing open-ended responses to generate an AI summary.")
 
-# File uploader
-uploaded_file = st.file_uploader("Choose a CSV file", type=["csv"])
-
-if uploaded_file is not None:
-    # Read CSV
-    df = pd.read_csv(uploaded_file)
-    st.write("### Data Preview", df.head())
-    
-    # Column selector
-    text_column = st.selectbox("Select the column containing text responses:", df.columns)
-    
-    # Clean data: drop empty values and convert to string list
-    responses = df[text_column].dropna().astype(str).tolist()
-    
-    if st.button("Generate Summary"):
-        if not responses:
-            st.warning("The selected column has no text data to summarize.")
-        else:
-            with st.spinner("Analyzing responses..."):
-                summary_result = generate_summary(responses)
-                
-            st.success("Analysis Complete!")
-            st.write("### AI Summary")
-            st.markdown(summary_result)
-
-
 
 # =============================
 # FILE UPLOADER

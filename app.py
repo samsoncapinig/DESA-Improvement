@@ -13,7 +13,12 @@ from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.pagesizes import letter
 import tempfile
-from openai import OpenAI
+import google.generativeai as genai
+
+# ✅ Gemini setup
+genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
+model = genai.GenerativeModel("gemini-1.5-flash")
+
 
 # =============================
 # PAGE CONFIG
@@ -62,38 +67,28 @@ def detect_strict_qualitative_columns(df):
     return found
 
 
-# Initialize the OpenAI client
-# Ensure OPENAI_API_KEY is set in your environment variables or Streamlit secrets
-client = OpenAI()
+import google.generativeai as genai
+
+genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
+model = genai.GenerativeModel("gemini-1.5-flash")
 
 def generate_summary(text_list):
-    """
-    Sends a list of text responses to OpenAI and returns a summary.
-    """
-    # Combine the responses into a single string with clear delimiters
-    combined_text = "\n---\n".join(text_list)
+    combined_text = "\n---\n".join(text_list[:50])  # limit for safety
     
     prompt = (
-        "You are an expert qualitative data analyst. Analyze the following customer/user "
-        "survey responses. Provide a concise summary that includes:\n"
-        "1. Main themes and common sentiments\n"
-        "2. Key pain points or criticisms\n"
-        "3. Notable positive feedback\n\n"
+        "You are an expert qualitative data analyst. Analyze the following survey responses and provide:\n"
+        "1. Main themes\n"
+        "2. Key concerns\n"
+        "3. Positive feedback\n\n"
         f"Responses:\n{combined_text}"
     )
 
     try:
-        response = client.chat.completions.create(
-            model="gpt-4o-mini", # Efficient and accurate for text analysis
-            messages=[
-                {"role": "system", "content": "You are a helpful data analysis assistant."},
-                {"role": "user", "content": prompt}
-            ],
-            temperature=0.5
-        )
-        return response.choices[0].message.content
+        response = model.generate_content(prompt)
+        return response.text
     except Exception as e:
         return f"An error occurred: {e}"
+
 
 # --- Streamlit UI ---
 st.title("📝 Qualitative Response Summarizer")

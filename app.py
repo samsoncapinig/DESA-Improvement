@@ -78,6 +78,7 @@ def generate_summary(text_list):
     prompt = (
         "Summarize the following survey responses into 3 to 5 concise themes. "
         "Each theme should be written as a short bullet point (1–2 sentences only). "
+        "Include direct quotation from the responses if possible. "
         "Do not include subcategories, analysis, or explanations.\n\n"
         f"Responses:\n{combined_text}"
     )

@@ -74,14 +74,19 @@ model = genai.GenerativeModel("gemini-3-flash-preview")
 
 def generate_summary(text_list):
     combined_text = "\n---\n".join(text_list[:50])  # limit for safety
-    
+
     prompt = (
-        "You are an expert qualitative data analyst. Analyze the following survey responses and provide:\n"
-        "1. Main themes\n"
-        "2. Key concerns\n"
-        "3. Positive feedback\n\n"
+        "Summarize the following survey responses into 3 to 5 concise themes. "
+        "Each theme should be written as a short bullet point (1–2 sentences only). "
+        "Do not include subcategories, analysis, or explanations.\n\n"
         f"Responses:\n{combined_text}"
     )
+
+    try:
+        response = model.generate_content(prompt)
+        return response.text
+    except Exception as e:
+        return f"An error occurred: {e}"
 
     try:
         response = model.generate_content(prompt)
